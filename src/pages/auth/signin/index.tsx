@@ -1,5 +1,6 @@
 "use client";
-import Copyright from "@/components/copyright/Copyright";
+import BlankLayout from "@/Layout/BlankLayout";
+import Copyright from "@/Layout/Copyright";
 import { handleTextChange } from "@/utils/form";
 import { Alert } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
@@ -15,7 +16,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import * as React from "react";
 
-export default function SignIn() {
+const SignIn = () => {
   const [errorMessage, setErrorMessage] = React.useState<any>({});
   const [formData, setFormData] = React.useState({
     email: "",
@@ -24,7 +25,7 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const url = `${process.env["API_BASE_URL"]}/auth/signin`;
+    const url = `${process.env["API_BASE_URL"]}/auth/login`;
     console.log(url);
 
     await axios
@@ -116,4 +117,7 @@ export default function SignIn() {
       <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );
-}
+};
+SignIn.getLayout = (page: React.ReactNode) => <BlankLayout>{page}</BlankLayout>;
+
+export default SignIn;

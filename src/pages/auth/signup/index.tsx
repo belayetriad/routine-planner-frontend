@@ -1,5 +1,6 @@
 "use client";
-import Copyright from "@/components/copyright/Copyright";
+import BlankLayout from "@/Layout/BlankLayout";
+import Copyright from "@/Layout/Copyright";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -13,7 +14,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 
-export default function SignUp() {
+const SignUp = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -109,4 +110,7 @@ export default function SignUp() {
       <Copyright sx={{ mt: 5 }} />
     </Container>
   );
-}
+};
+SignUp.getLayout = (page: React.ReactNode) => <BlankLayout>{page}</BlankLayout>;
+
+export default SignUp;
