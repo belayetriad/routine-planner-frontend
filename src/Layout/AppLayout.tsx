@@ -93,8 +93,6 @@ export default function AppLayout({
     if (!token) {
       // If token is not present, redirect to the signin page
       router.push("/auth/signin");
-    } else {
-      router.push("/");
     }
   }, []);
 

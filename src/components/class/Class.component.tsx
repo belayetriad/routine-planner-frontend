@@ -10,19 +10,19 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Chip,
   Collapse,
   Divider,
+  FormControl,
+  FormHelperText,
   Grid,
   IconButton,
+  InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import Pagination from "@mui/material/Pagination";
 import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -30,22 +30,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useFormik } from "formik";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 
 export default function ClassComponent() {
-  const currentWarehouseId = Cookies.get("currentWarehouseId");
   const defaultData = {
     name: "",
-    startTime: "",
-    priority: Number,
+    duration: 0,
+    priority: null,
   };
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
-    startTime: Yup.string().required("Time is required"),
+    duration: Yup.number().required("Duration is required"),
     priority: Yup.number().required("Priority is required"),
   });
 
@@ -70,9 +68,9 @@ export default function ClassComponent() {
     onSubmit: async (values: any) => {
       try {
         if (editDataId) {
-          await apiRequest.put(`/class/${editDataId}`, values);
+          await apiRequest.put(`/class-session/${editDataId}`, values);
         } else {
-          await apiRequest.post("/class", values);
+          await apiRequest.post("/class-session", values);
         }
 
         Swal.fire({
@@ -100,11 +98,14 @@ export default function ClassComponent() {
   });
 
   const getList = async (pageNumber: number) => {
-    try {
-      const res = await apiRequest.get(`/class`);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    await apiRequest
+      .get(`/class-session`)
+      .then((res) => {
+        setListData(res);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   useEffect(() => {
@@ -116,10 +117,9 @@ export default function ClassComponent() {
     const editData = listData.find((data: any) => data["_id"] === id);
     if (editData) {
       formik.setValues({
-        warehouseId: editData?.warehouseId?._id,
         name: editData?.name,
-        type: editData.type,
-        status: editData.isActive,
+        duration: editData.duration,
+        priority: editData.priority,
       });
     }
   };
@@ -141,7 +141,7 @@ export default function ClassComponent() {
               <KeyboardArrowDownIcon />
             )}
           </IconButton>
-          <CardHeader title="Stores" titleTypographyProps={{ variant: "h6" }} />
+          <CardHeader title="Class" titleTypographyProps={{ variant: "h6" }} />
         </div>
 
         <Divider style={{ margin: 0 }} />
@@ -150,7 +150,7 @@ export default function ClassComponent() {
           <form onSubmit={formik.handleSubmit}>
             <CardContent>
               <Grid container spacing={5} sx={{ mb: 6 }}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
                     type="text"
@@ -161,70 +161,69 @@ export default function ClassComponent() {
                     onChange={formik.handleChange}
                     error={formik.touched.name && Boolean(formik.errors.name)}
                     helperText={
-                      formik.touched.name && Boolean(formik.errors.name)
+                      <>
+                        {formik.errors.name &&
+                          formik.touched.name &&
+                          String(formik.errors.name)}
+                      </>
                     }
                   />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    fullWidth
-                    type="text"
-                    label="Class Start Time"
-                    name="startTime"
-                    placeholder="Enter Class Name"
-                    value={formik.values.startTime}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.startTime &&
-                      Boolean(formik.errors.startTime)
-                    }
-                  >
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
-                    <MenuItem value={4}>4</MenuItem>
-                    <MenuItem value={5}>5</MenuItem>
-                  </Select>
                 </Grid>
               </Grid>
               <Grid container spacing={5} sx={{ mb: 6 }}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    type="text"
-                    label="Class Name"
-                    name="name"
-                    placeholder="Enter Class Name"
-                    value={formik.values.name}
+                    type="number"
+                    label="Duration (In hour)"
+                    name="duration"
+                    placeholder="Enter Duration (In hour)"
+                    value={formik.values.duration}
                     onChange={formik.handleChange}
-                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    error={
+                      formik.touched.duration && Boolean(formik.errors.duration)
+                    }
                     helperText={
-                      formik.touched.name && Boolean(formik.errors.name)
+                      <>
+                        {formik.errors.duration &&
+                          formik.touched.duration &&
+                          String(formik.errors.duration)}
+                      </>
                     }
                   />
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    type="text"
-                    label="Class Start Time"
-                    name="startTime"
-                    placeholder="Enter Class Name"
-                    value={formik.values.startTime}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.startTime &&
-                      Boolean(formik.errors.startTime)
-                    }
-                    helperText={
-                      formik.touched.startTime &&
-                      Boolean(formik.errors.startTime)
-                    }
-                  />
+                  <FormControl sx={{ width: "100%" }}>
+                    <InputLabel id="demo-simple-select-standard-label">
+                      Priority
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      fullWidth
+                      type="text"
+                      label="Priority"
+                      name="priority"
+                      placeholder="Priority"
+                      value={formik.values.priority}
+                      onChange={formik.handleChange}
+                      error={
+                        formik.touched.priority &&
+                        Boolean(formik.errors.priority)
+                      }
+                    >
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                      <MenuItem value={4}>4</MenuItem>
+                      <MenuItem value={5}>5</MenuItem>
+                    </Select>
+                    <FormHelperText>
+                      {formik.errors.priority &&
+                        formik.touched.priority &&
+                        String(formik.errors.priority)}
+                    </FormHelperText>
+                  </FormControl>
                 </Grid>
               </Grid>
             </CardContent>
@@ -262,10 +261,9 @@ export default function ClassComponent() {
             <TableHead>
               <TableRow>
                 <TableCell>Sl</TableCell>
-                <TableCell align="center">Warehouse</TableCell>
-                <TableCell align="center">Store</TableCell>
-                <TableCell align="center">Store Type</TableCell>
-                <TableCell align="center">Status</TableCell>
+                <TableCell align="center">Name</TableCell>
+                <TableCell align="center">Duration</TableCell>
+                <TableCell align="center">Priority</TableCell>
 
                 <TableCell align="center">Action</TableCell>
               </TableRow>
@@ -284,26 +282,14 @@ export default function ClassComponent() {
                     {index + 1}
                   </TableCell>
                   <TableCell component="th" scope="row" align="center">
-                    {data?.warehouseId?.name}
-                  </TableCell>
-                  <TableCell component="th" scope="row" align="center">
                     {data?.name}
                   </TableCell>
-
                   <TableCell component="th" scope="row" align="center">
-                    {data?.type}
+                    {data?.duration}
                   </TableCell>
 
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ textAlign: "center" }}
-                  >
-                    {data["isActive"] ? (
-                      <Chip label="Active" color="success" />
-                    ) : (
-                      <Chip label="In-Active" color="error" />
-                    )}
+                  <TableCell component="th" scope="row" align="center">
+                    {data?.priority}
                   </TableCell>
 
                   {/*action cell*/}
@@ -341,26 +327,6 @@ export default function ClassComponent() {
               No Data Found!
             </Box>
           )}
-
-          <Divider />
-
-          {/*pagination*/}
-          <Stack
-            spacing={2}
-            sx={{
-              justifyContent: "center",
-              flexDirection: "row",
-              pb: 8,
-              pt: 4,
-            }}
-          >
-            <Pagination
-              count={totalPage}
-              variant="outlined"
-              shape="rounded"
-              onChange={handleChangePage}
-            />
-          </Stack>
         </TableContainer>
       </Box>
     </>

@@ -4,6 +4,8 @@ import { createEmotionCache } from "@/utils/create-emotion-cache";
 import { EmotionCache } from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 type ExtendedAppProps = AppProps & {
@@ -17,9 +19,11 @@ export default function App(props: ExtendedAppProps) {
   const getLayout =
     Component.getLayout ?? ((page) => <AppLayout>{page}</AppLayout>);
   return (
-    <CacheProvider value={emotionCache}>
-      <CssBaseline />
-      {getLayout(<Component {...pageProps} />)}
-    </CacheProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <CacheProvider value={emotionCache}>
+        <CssBaseline />
+        {getLayout(<Component {...pageProps} />)}
+      </CacheProvider>
+    </LocalizationProvider>
   );
 }
