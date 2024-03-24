@@ -127,7 +127,7 @@ export default function AppLayout({
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Dashboard
+            Routine Planner
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">

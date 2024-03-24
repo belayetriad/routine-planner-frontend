@@ -1,4 +1,3 @@
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import NextPlanIcon from "@mui/icons-material/NextPlan";
 import SchoolIcon from "@mui/icons-material/School";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -9,21 +8,15 @@ export const mainListItems = (
   <React.Fragment>
     <ListItemButton href="/">
       <ListItemIcon>
-        <DashboardIcon />
+        <NextPlanIcon />
       </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+      <ListItemText primary="Routine Plan" />
     </ListItemButton>
     <ListItemButton href="/class">
       <ListItemIcon>
         <SchoolIcon />
       </ListItemIcon>
       <ListItemText primary="Class" />
-    </ListItemButton>
-    <ListItemButton href="/study-plan">
-      <ListItemIcon>
-        <NextPlanIcon />
-      </ListItemIcon>
-      <ListItemText primary="Study Plan" />
     </ListItemButton>
   </React.Fragment>
 );

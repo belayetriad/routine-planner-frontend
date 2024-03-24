@@ -1,6 +1,7 @@
 "use client";
-import { Box } from "@mui/material";
+
+import StudyPlanComponent from "@/components/studyPlan/StudyPlan.component";
 
 export default function Home() {
-  return <Box>asdfas</Box>;
+  return <StudyPlanComponent></StudyPlanComponent>;
 }
