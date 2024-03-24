@@ -55,6 +55,9 @@ export default function StudyPlanComponent() {
   const [listData, setListData] = useState<any>([]);
   const [classListData, setClassListData] = useState<any>([]);
   const [isFormVisible, setIsFormVisible] = useState(true);
+  const [studyPlanDate, setStudyPlanDate] = useState(
+    dayjs(new Date()).format("DD-MM-YYYY")
+  );
 
   const toggleFormVisibility = () => {
     setIsFormVisible(!isFormVisible);
@@ -103,9 +106,9 @@ export default function StudyPlanComponent() {
     },
   });
 
-  const getList = async () => {
+  const getList = async (date = studyPlanDate) => {
     await apiRequest
-      .get(`/study-plans`)
+      .get(`/study-plans?date=${date}`)
       .then((res) => {
         setListData(res);
       })
@@ -129,6 +132,12 @@ export default function StudyPlanComponent() {
     getList();
     getClassList();
   }, []);
+
+  const handleStudyPlanDateChange = (date: string) => {
+    date = dayjs(date).format("DD-MM-YYYY");
+    setStudyPlanDate(date);
+    getList(date);
+  };
 
   const onEdit = (id: string) => {
     setEditDataId(id);
@@ -159,7 +168,10 @@ export default function StudyPlanComponent() {
               <KeyboardArrowDownIcon />
             )}
           </IconButton>
-          <CardHeader title="Class" titleTypographyProps={{ variant: "h6" }} />
+          <CardHeader
+            title="Study Plan"
+            titleTypographyProps={{ variant: "h6" }}
+          />
         </div>
 
         <Divider style={{ margin: 0 }} />
@@ -168,7 +180,7 @@ export default function StudyPlanComponent() {
           <form onSubmit={formik.handleSubmit}>
             <CardContent>
               <Grid container spacing={5} sx={{ mb: 6 }}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <FormControl sx={{ width: "100%" }}>
                     <InputLabel id="demo-simple-select-standard-label">
                       Classes
@@ -213,7 +225,7 @@ export default function StudyPlanComponent() {
                     name="availableTime"
                     placeholder="Available Time (In hour)"
                     value={formik.values.availableTime}
-                    onChange={handleDateChange}
+                    onChange={formik.handleChange}
                     error={
                       formik.touched.availableTime &&
                       Boolean(formik.errors.availableTime)
@@ -269,15 +281,29 @@ export default function StudyPlanComponent() {
 
       {/*table list*/}
       <Box sx={{ mt: "50px" }}>
+        <Box sx={{ background: "#fff", p: 2 }}>
+          <Grid container sx={{ justifyContent: "end" }}>
+            <Grid item xs={12} sm={3}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                format="DD-MM-YYYY"
+                label="Date"
+                name="date"
+                value={dayjs(studyPlanDate)}
+                onChange={(date) => handleStudyPlanDateChange(date)}
+              />
+            </Grid>
+          </Grid>
+        </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Sl</TableCell>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Available Time</TableCell>
                 <TableCell align="center">Date</TableCell>
-
+                <TableCell align="center">Class Name</TableCell>
+                <TableCell align="center">Duration</TableCell>
+                <TableCell align="center">Priority</TableCell>
                 <TableCell align="center">Action</TableCell>
               </TableRow>
             </TableHead>
@@ -295,14 +321,16 @@ export default function StudyPlanComponent() {
                     {index + 1}
                   </TableCell>
                   <TableCell component="th" scope="row" align="center">
-                    {data?.name}
+                    {dayjs(data?.date).format("DD-MM-YYYY")}
                   </TableCell>
                   <TableCell component="th" scope="row" align="center">
-                    {data?.availableTime}
+                    {data?.classSession?.name}
                   </TableCell>
-
                   <TableCell component="th" scope="row" align="center">
-                    {data?.date}
+                    {data?.duration}
+                  </TableCell>
+                  <TableCell component="th" scope="row" align="center">
+                    {data?.classSession?.priority}
                   </TableCell>
 
                   {/*action cell*/}
