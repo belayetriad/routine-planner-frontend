@@ -55,9 +55,7 @@ export default function StudyPlanComponent() {
   const [listData, setListData] = useState<any>([]);
   const [classListData, setClassListData] = useState<any>([]);
   const [isFormVisible, setIsFormVisible] = useState(true);
-  const [studyPlanDate, setStudyPlanDate] = useState(
-    dayjs(new Date()).format("DD-MM-YYYY")
-  );
+  const [studyPlanDate, setStudyPlanDate] = useState(dayjs(new Date()));
 
   const toggleFormVisibility = () => {
     setIsFormVisible(!isFormVisible);
@@ -134,7 +132,6 @@ export default function StudyPlanComponent() {
   }, []);
 
   const handleStudyPlanDateChange = (date: string) => {
-    date = dayjs(date).format("DD-MM-YYYY");
     setStudyPlanDate(date);
     getList(date);
   };
