@@ -1,3 +1,3 @@
-export default function Class() {
-  return <>sdfsdf</>;
+export default function StudyPlan() {
+  return <>Study Plan</>;
 }
