@@ -1,28 +1,54 @@
 "use client";
 import BlankLayout from "@/Layout/BlankLayout";
 import Copyright from "@/Layout/Copyright";
+import { handleTextChange } from "@/utils/form";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
+import Cookies from "js-cookie";
 import * as React from "react";
 
 const SignUp = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const [errorMessage, setErrorMessage] = React.useState<any>({});
+  const [formData, setFormData] = React.useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const url = `${process.env["API_BASE_URL"]}/auth/register`;
+    await axios
+      .post(url, formData)
+      .then((res) => {
+        const { token } = res.data;
+
+        // Set the token in a cookie
+        Cookies.set("accessToken", token);
+
+        // Redirect to the desired page (e.g., /dashboard)
+        window.location.href = "/";
+      })
+      .catch((error) => {
+        setErrorMessage({ message: error?.response?.data?.message });
+      });
   };
+
+  React.useEffect(() => {
+    const token = Cookies.get("accessToken");
+
+    if (token) {
+      window.location.href = "/";
+    }
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -41,35 +67,32 @@ const SignUp = () => {
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={12}>
               <TextField
                 autoComplete="given-name"
-                name="firstName"
+                name="fullName"
                 required
                 fullWidth
-                id="firstName"
-                label="First Name"
+                id="fullName"
+                label="Full Name"
                 autoFocus
+                value={formData.email}
+                onChange={(e) => handleTextChange(e, setFormData, formData)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="family-name"
-              />
-            </Grid>
+
             <Grid item xs={12}>
               <TextField
+                margin="normal"
                 required
                 fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                autoFocus
+                value={formData.email}
+                onChange={(e) => handleTextChange(e, setFormData, formData)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -81,12 +104,8 @@ const SignUp = () => {
                 type="password"
                 id="password"
                 autoComplete="new-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+                value={formData.password}
+                onChange={(e) => handleTextChange(e, setFormData, formData)}
               />
             </Grid>
           </Grid>

@@ -1,9 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { CssBaseline } from "@mui/material";
+import { Avatar, CssBaseline, Menu, MenuItem, Tooltip } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Badge from "@mui/material/Badge";
 import Box, { BoxProps } from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
@@ -82,27 +80,42 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
   };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    Cookies.remove("accessToken");
+    router.push("/auth/signin");
+    handleCloseUserMenu();
+  };
+
+  const [navOpen, setNavOpen] = React.useState(true);
+  const toggleDrawer = () => {
+    setNavOpen(!navOpen);
+  };
+
   const router = useRouter();
   const token = Cookies.get("accessToken");
 
   React.useEffect(() => {
     if (!token) {
-      // If token is not present, redirect to the signin page
       router.push("/auth/signin");
     }
   }, []);
 
-  // if (!token) {
-  //   return <></>;
-  // }
   return (
     <AppLayoutWrapper sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="absolute" open={open}>
+      <AppBar position="absolute" open={navOpen}>
         <Toolbar
           sx={{
             pr: "24px", // keep right padding when drawer closed
@@ -115,7 +128,7 @@ export default function AppLayout({
             onClick={toggleDrawer}
             sx={{
               marginRight: "36px",
-              ...(open && { display: "none" }),
+              ...(navOpen && { display: "none" }),
             }}
           >
             <MenuIcon />
@@ -129,14 +142,36 @@ export default function AppLayout({
           >
             Routine Planner
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Programming Hero" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              <MenuItem onClick={handleLogout}>
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={navOpen}>
         <Toolbar
           sx={{
             display: "flex",

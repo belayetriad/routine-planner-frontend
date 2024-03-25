@@ -26,8 +26,6 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const url = `${process.env["API_BASE_URL"]}/auth/login`;
-    console.log(url);
-
     await axios
       .post(url, formData)
       .then((res) => {
