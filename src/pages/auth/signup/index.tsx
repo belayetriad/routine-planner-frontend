@@ -2,6 +2,7 @@
 import BlankLayout from "@/Layout/BlankLayout";
 import Copyright from "@/Layout/Copyright";
 import { handleTextChange } from "@/utils/form";
+import { Alert } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -18,7 +19,7 @@ import * as React from "react";
 const SignUp = () => {
   const [errorMessage, setErrorMessage] = React.useState<any>({});
   const [formData, setFormData] = React.useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
   });
@@ -69,14 +70,14 @@ const SignUp = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12}>
               <TextField
-                autoComplete="given-name"
-                name="fullName"
+                autoComplete="name"
+                name="name"
                 required
                 fullWidth
-                id="fullName"
-                label="Full Name"
+                id="name"
+                label="Name"
                 autoFocus
-                value={formData.email}
+                value={formData.name}
                 onChange={(e) => handleTextChange(e, setFormData, formData)}
               />
             </Grid>
@@ -109,6 +110,11 @@ const SignUp = () => {
               />
             </Grid>
           </Grid>
+          {errorMessage?.["message"] && (
+            <Alert sx={{ mb: 2, mt: 2 }} severity="error">
+              {errorMessage?.["message"]}
+            </Alert>
+          )}
           <Button
             type="submit"
             fullWidth
